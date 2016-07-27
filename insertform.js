@@ -9,6 +9,7 @@ import {
   TouchableNativeFeedback ,
   View
 } from 'react-native';
+import Button from 'sp-react-native-iconbutton';
 
 export default class InsertForm extends Component {
   
@@ -30,20 +31,18 @@ export default class InsertForm extends Component {
     const txt = this.state.name;
     return (
         <View>
+        <Text>Report </Text>
         <TextInput
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
         onChangeText ={(e)=>this.handleChange(e)}
         value={this.state.name}
       />
-       <TouchableHighlight
-        style={styles.button}
-        onPress={ ()=>{this.handleSubmit()}}>
-        <View>
-          <Text style={styles.buttonText}>Button!</Text>
-        </View>
-      </TouchableHighlight>    
-      
-            <Text>This is : {txt}</Text>
+       <Button
+                style={{backgroundColor: '#C3FEC2', height:60, width:250, borderRadius: 4, borderWidth: 1, borderColor: 'rgba(0,0,0,0.2)'}}
+                textStyle={{color: 'white', textAlign: 'center'}}
+                onPress={ ()=>{this.handleSubmit()}}>
+              Send
+            </Button>
         </View>
        );
   }

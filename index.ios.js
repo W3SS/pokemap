@@ -8,13 +8,16 @@ import React, { Component } from 'react';
 import { MapView ,Dimensions, Modal,TouchableHighlight} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import  InsertForm  from './insertform';
+import Axios from 'axios';
+import Button from 'sp-react-native-iconbutton';
 
 
 import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  Navigator
 } from 'react-native';
 
 class pokeMap extends Component {
@@ -56,14 +59,33 @@ class pokeMap extends Component {
     this.setState({
       region:region
     });
+    Axios.get('https://pokemap-andbet391.c9users.io/markers.json').then( (response) =>{
+       this.setState({
+         annotations:response.data
+       });
+    })
+    .catch(function (error) {
+      alert(error);
+   });
+    
+    
   }
   
-  handleInsert(name){
+handleInsert(name){
     console.log('Insert');
     let annot ={ title:name, 
                  latitude:this.state.region.latitude, 
-                 longitude:this.state.region.longitude 
+                 longitude:this.state.region.longitude,
+                 report_date:new Date()
                 };
+    Axios.post('https://pokemap-andbet391.c9users.io/markers',annot).then((response)=>{
+       alert('Post done');
+    })
+    .catch(function (error) {
+      alert(error);
+   });
+    
+    
     var new_annotations = this.state.annotations.concat(annot);
     
     console.log(new_annotations);
@@ -75,6 +97,7 @@ class pokeMap extends Component {
   render() {
     return (
       <View>
+      
         <MapView
         style={styles.mapview}
         showsUserLocation={true}
@@ -89,37 +112,23 @@ class pokeMap extends Component {
           visible={this.state.modalVisible}
           onRequestClose={() => {alert("Modal has been closed.")}}
           >
-         <View style={{marginTop: 22}}>
-          <View>
-            <Text>Hello World!</Text>
+         <View style={styles.modalcontent}>
+           
+              <InsertForm onInsert={(name)=> this.handleInsert(name)}/>
 
-            <TouchableHighlight onPress={() => {
-              this.setModalVisible(!this.state.modalVisible)
-            }}>
-              <Text>Hide Modal</Text>
-            </TouchableHighlight>
-            
-             <InsertForm onInsert={(name)=> this.handleInsert(name)}/>
-              <View>
-        <Text>
-          <Text style={styles.title}>Initial position: </Text>
-          {this.state.initialPosition}
-        </Text>
-        <Text>
-          <Text style={styles.title}>Current position: </Text>
-          {this.state.lastPosition}
-        </Text>
-      </View>
+            <Button
+                style={styles.btnCancel}
+                textStyle={{color: 'white', textAlign: 'center'}}
+                onPress={()=>this.setModalVisible(!this.state.modalVisible)}>
+              Cancel
+            </Button>
           </View>
-         </View>
         </Modal>
 
         <ActionButton
           buttonColor="rgba(231,76,60,1)"
           onPress={() => this.showModal()}
         />
-        
-              
       </View>
        );
   }
@@ -136,11 +145,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
+   modalcontent:{
+        justifyContent: 'center',
+        flex:1,
+        alignItems:'center'     
+    },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
   },
+  btnCancel:{backgroundColor: '#FC5B5D', height:60, width:250,borderRadius: 4, borderWidth: 1, borderColor: 'rgba(0,0,0,0.2)'},
   instructions: {
     textAlign: 'center',
     color: '#333333',
